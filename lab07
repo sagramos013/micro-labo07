@@ -1,0 +1,76 @@
+.386;arquitectura?
+.model flat, stdcall;modelo
+option casemap:none
+
+; Includes
+include \masm32\include\windows.inc
+include \masm32\include\kernel32.inc
+include \masm32\include\masm32.inc
+include \masm32\include\masm32rt.inc 
+
+; Librerías
+includelib \masm32\lib\kernel32.lib
+includelib \masm32\lib\masm32.lib
+
+.DATA;Segmento de Datos
+num1 dword 7                                           
+num2 dword 1
+suma dword 0
+resta dword 0
+msmsuma DB "El resultado de la suma: ",0
+msmresta DB 0ah,0dh,"El resultado de la resta: ",0
+msmigual DB 0ah,0dh,"Los numeros son iguales",0
+msmprimero DB 0ah,0dh,"El mayor es el primero",0
+msmsegundo DB 0ah,0dh,"El mayor es el segundo",0
+
+.CODE ;Segmento de codigo
+Programa:
+main PROC
+	;sumar los numeros
+	MOV EAX,num1
+	ADD EAX,num2
+	MOV suma,EAX;se guarda en la variable suma la suma
+
+	;restar los numeros
+	MOV EAX,num1
+	SUB EAX,num2
+	MOV resta,EAX;guardamos la resta de los 2 numeros
+
+	;volvemos entendibles los resultados de los numeros
+	ADD suma,30h
+	ADD resta,30h
+
+	;mostramos el resultado de la suma
+	INVOKE StdOut, addr msmsuma
+	INVOKE StdOut, addr suma
+
+	;mostramos el resultado de la resta
+	INVOKE StdOut, addr msmresta
+	INVOKE StdOut, addr resta
+
+
+	MOV EAX,num1;movemos numero 1 a EAX
+	CMP EAX,num2;comparamos el valor de EAX(num1) con num2
+
+	JZ igual
+	JC segundo
+	JNZ primero
+
+	primero:;mostramos mensaje que el primero es el mayor
+	INVOKE StdOut, addr msmprimero
+	JMP fin
+
+	segundo:;mostramos mensaje que el segundo es el mayor
+	INVOKE StdOut, addr msmsegundo
+	JMP fin
+
+	igual:;mostramos mensaje que ambos son iguales
+    INVOKE StdOut, addr msmigual
+	JMP finalizar
+
+	;fin de programa
+	finalizar:
+	INVOKE ExitProcess,0
+
+main ENDP
+END Programa
